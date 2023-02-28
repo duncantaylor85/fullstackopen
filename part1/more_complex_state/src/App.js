@@ -1,24 +1,38 @@
 import {useState} from 'react'
 
+const History = (props) => {
+  if(props.total === 0) {
+  return(
+      <div>the app is used by pressing the buttons</div>
+  )
+  }
+  return(
+    <div>{props.total}</div>
+  )
+}
+
 function App() {
   const [clicks, setClicks] = useState({
     left: 0,
     right: 0
   })
-  const [allClicks, setAll] = useState([])
+  const [total, setTotal] = useState(0)
+
   const handleLeftClick = () => {
-    setAll(allClicks.concat('L'))
+    const updatedLeft = clicks.left + 1
     setClicks({
       ... clicks,
-      left: clicks.left + 1,
+      left: updatedLeft,
     })
+    setTotal(updatedLeft + clicks.right)
   }
   const handleRightClick = () => {
-    setAll(allClicks.concat('R'))
+    const updatedRight = clicks.right + 1
     setClicks({
       ... clicks,
-      right: clicks.right +1
+      right: updatedRight 
     })
+    setTotal(clicks.left + updatedRight)
   }
   return(
     <div>
@@ -26,7 +40,7 @@ function App() {
       <button onClick={handleLeftClick}>left</button>
       <button onClick={handleRightClick}>right</button>
       {clicks.right}
-      <p>{allClicks.join(" ")}</p>
+      <History total={total} />
     </div>
   )  
 }
