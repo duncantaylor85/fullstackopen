@@ -3,13 +3,18 @@ import {useState} from 'react'
 
 function App() {
   const [value, setValue] = useState(10)
-  const hello = (who) => () => console.log("Hello", who)
-    
+  const handleClick = (newValue) => {
+    return () => {
+      setValue(newValue)
+    }
+  }
      
   return(
     <div>
-      <button onClick={hello("world")}>world</button>
-      <button onClick={hello("react")}>react</button>
+      <div>{value}</div>
+      <button onClick={handleClick(1000)}>Thousand</button>
+      <button onClick={handleClick(0)}>Reset</button>
+      <button onClick={handleClick(value + 1)}>Increment</button>
     </div>
   )  
 }
