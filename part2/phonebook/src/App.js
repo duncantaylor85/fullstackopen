@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import axios from 'axios'
 import Name from "./components/Name";
+import namesService from "./services/names";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -8,17 +8,36 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
 
   useEffect(() => {
-    axios.get('http://localhost:3001/persons').then((response)=> setPersons(response.data))
-  }, [])
+    namesService.getAll().then((response) => setPersons(response));
+  }, []);
 
   const addName = (event) => {
     event.preventDefault();
     const personFound = persons.find((person) => person.name === newName);
     if (personFound) {
-      alert(`${newName} was already added to the phonebook`);
+      const shouldUpdate = window.confirm(
+        `${newName} is already added to the phonebook, replace the old number?`
+      );
+      if (shouldUpdate) {
+        const updatedPerson = { ...personFound, number: newNumber };
+        namesService
+          .update(personFound.id, updatedPerson)
+          .then((updatedData) => {
+            setPersons(
+              persons.map((person) =>
+                person.id === personFound.id ? updatedData : person
+              )
+            );
+          })
+          .catch((error) => {
+            console.error("Error updating person:", error);
+          });
+      }
     } else {
       const nameObject = { name: newName, number: newNumber };
-      setPersons(persons.concat(nameObject));
+      namesService
+        .create(nameObject)
+        .then((response) => setPersons(persons.concat(response)));
     }
     setNewName("");
     setNewNumber("");
@@ -53,7 +72,7 @@ const App = () => {
       <h2>Numbers</h2>
       <ul style={{ padding: 0, listStyleType: "none" }}>
         {persons.map((person) => (
-          <Name key={person.name} name={person.name} />
+          <Name key={person.id} person={person} refreshPersons={setPersons} />
         ))}
       </ul>
     </div>
