@@ -1,11 +1,32 @@
 import { useState, useEffect } from "react";
 import Name from "./components/Name";
 import namesService from "./services/names";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+  const [message, setMessage] = useState(null);
+  const [messageType, setMessageType] = useState("");
+
+  const removePerson = (id, name) => {
+    if (window.confirm(`Delete ${name}?`)) {
+      namesService
+        .remove(id)
+        .then(
+          setPersons((prevState) =>
+            prevState.filter((person) => person.id !== id)
+          )
+        )
+        .catch(() => {
+          setMessage(
+            `Information of ${name} has already been removed from the server`
+          );
+          setMessageType("error");
+        });
+    }
+  };
 
   useEffect(() => {
     namesService.getAll().then((response) => setPersons(response));
@@ -39,6 +60,9 @@ const App = () => {
         .create(nameObject)
         .then((response) => setPersons(persons.concat(response)));
     }
+    setMessageType("added");
+    console.log(personFound);
+    setMessage(`Added ${newName}`);
     setNewName("");
     setNewNumber("");
   };
@@ -53,6 +77,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} messageType={messageType} />
       <div>
         filter shown with
         <input />
@@ -72,7 +97,7 @@ const App = () => {
       <h2>Numbers</h2>
       <ul style={{ padding: 0, listStyleType: "none" }}>
         {persons.map((person) => (
-          <Name key={person.id} person={person} refreshPersons={setPersons} />
+          <Name key={person.id} person={person} onDelete={removePerson} />
         ))}
       </ul>
     </div>
