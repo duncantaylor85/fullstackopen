@@ -1,6 +1,5 @@
 import FilterInput from "./FilterInput";
 import countriesService from "../services/countries";
-import Country from "./Country";
 import { useState, useEffect } from "react";
 import CountryList from "./CountryList";
 
