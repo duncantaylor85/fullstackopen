@@ -6,6 +6,8 @@ const getAll = () => {
   return axios.get(baseUrl);
 };
 
-export default {
+const countriesService = {
   getAll,
 };
+
+export default countriesService;

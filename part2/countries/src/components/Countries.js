@@ -19,8 +19,7 @@ const Countries = () => {
       return country.name.common.toLowerCase().includes(filterText);
     });
     setFilteredCountries(filtered);
-    console.log(filteredCountries);
-  }, [filterText]);
+  }, [filterText, countries]);
 
   useEffect(() => {
     console.log(filteredCountries);
